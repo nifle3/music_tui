@@ -1,0 +1,17 @@
+# https://taskfile.dev
+
+version: '3'
+
+tasks:
+  build:
+    env:
+      CGO_ENABLED: 0
+      GOTRACEBACK: "crash"
+    cmds:
+      - go build -o ./bin/yandex_tui ./cmd/yandexMusicTui
+    silent: true
+
+  run:
+    cmds:
+      - ./bin/yandex_tui
+    silent: true
