@@ -12,6 +12,8 @@
       buildInputs = with pkgs; [
         go
         go-task
+        gopls
+        go-tools
       ];
       shellHook = ''
         go version
