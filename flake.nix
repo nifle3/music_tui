@@ -14,10 +14,12 @@
         go-task
         gopls
         go-tools
+        golangci-lint
       ];
       shellHook = ''
         go version
         task --version
+        golangci-lint --version
       '';
     };
   };
