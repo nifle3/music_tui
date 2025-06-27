@@ -4,11 +4,19 @@ version: '3'
 
 tasks:
   build:
+    dotenv:
+      - ".env"
     env:
       CGO_ENABLED: 0
       GOTRACEBACK: "crash"
     cmds:
-      - go build -o ./bin/yandex_tui ./cmd/yandexMusicTui
+      - echo "YANDEX CLIENT ${YANDEX_CLIENT_ID}"
+      - echo "YANDEX SECRET ${YANDEX_CLIENT_SECRET}"
+      - |
+        go build -o ./bin/yandex_tui \
+          -ldflags "-X github.com/nifle3/yandex_music_tui/internal/yandexApi.сlientId=${YANDEX_CLIENT_ID} \
+                    -X github.com/nifle3/yandex_music_tui/internal/yandexApi.clientSecret=${YANDEX_CLIENT_SECRET}" \
+          ./cmd/yandexMusicTui
     silent: true
 
   run:
