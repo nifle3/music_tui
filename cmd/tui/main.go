@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/nifle3/yandex_music_tui/internal/ipc"
+	"github.com/nifle3/tui_music/internal/ipc"
 	)
 
 var version string

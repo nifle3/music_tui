@@ -15,8 +15,8 @@ tasks:
       - echo "YANDEX SECRET ${YANDEX_CLIENT_SECRET}"
       - |
         go build -o ./bin/yandex_tui \
-          -ldflags "-X github.com/nifle3/yandex_music_tui/internal/yandex.сlientId=${YANDEX_CLIENT_ID} \
-                    -X github.com/nifle3/yandex_music_tui/internal/yandex.clientSecret=${YANDEX_CLIENT_SECRET} \
+          -ldflags "-X github.com/nifle3/tui_music/internal/yandex.сlientId=${YANDEX_CLIENT_ID} \
+                    -X github.com/nifle3/tui_music/internal/yandex.clientSecret=${YANDEX_CLIENT_SECRET} \
                     -X main.Version=${VERSION}" \
           ./cmd/tui
     silent: true

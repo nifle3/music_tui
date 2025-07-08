@@ -1,4 +1,4 @@
-module github.com/nifle3/yandex_music_tui
+module github.com/nifle3/tui_music
 
 go 1.24.4
 
