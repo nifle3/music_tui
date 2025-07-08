@@ -5,9 +5,13 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"os/signal"
+	"sync"
+	"syscall"
 
 	"github.com/nifle3/tui_music/internal/ipc"
-	)
+	"golang.org/x/net/context"
+)
 
 var version string
 
@@ -21,31 +25,45 @@ func main() {
 	yandexOAUTHToken := flag.String("yandex_oauth", "", "Yandex OAUTH key to access music api via account")
 	flag.Parse()
 
-	fmt.Println("yandex OAUTH token ", *yandexOAUTHToken)
+	gracefulCtx, gracefulStop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer gracefulStop()
 
-	ipcClient := ipc.NewClient()
-	isAlreadyApplicationRun, err := ipcClient.IsServerAvailable()
-	if err != nil {
-		slog.Error("Invalid ipc server on port")
-		os.Exit(0)
+	if isSendFlagsToClientSuccess(*yandexOAUTHToken) {
+		return
 	}
 
-	if isAlreadyApplicationRun {
+	slog.Info("Application doesn't run, starting")
+
+	resultChan := make(chan string)
+	wg := sync.WaitGroup{}
+
+	ipcServer := ipc.MustServer(resultChan)
+	wg.Add(1)
+	go ipc.StartServer(ipcServer, &wg, gracefulCtx)
+	defer ipc.StopServer(ipcServer)
+
+	slog.Info("IPC server started")
+
+	wg.Wait()
+}
+
+func isSendFlagsToClientSuccess(yandexOAUTHToken string) (result bool) {
+	result = false
+	ipcClient, err := ipc.ConnectToServer()
+	defer ipc.CloseClient(ipcClient)
+
+	if err == nil {
 		slog.Info("Application already running, setup flags")
 
-		if *yandexOAUTHToken != "" {
-			err = ipcClient.SetYandexOAUTHToken(*yandexOAUTHToken)
+		if yandexOAUTHToken != "" {
+			err = ipc.SendYandexOAUTHToken(ipcClient, yandexOAUTHToken)
 			if err != nil {
 				slog.Error("Cannot set yandex oauth token")
 			}
 		}
 
-		os.Exit(1)
+		result = true
 	}
 
-	slog.Info("Application doesn't run, starting")
-
-	go ipc.StartServer()
-
-	slog.Info("IPC server started")
+	return
 }
