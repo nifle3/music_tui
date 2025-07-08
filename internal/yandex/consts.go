@@ -1,4 +1,4 @@
-package clientIdyandexapi
+package yadenx
 
 import "fmt"
 
