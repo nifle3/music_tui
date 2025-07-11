@@ -4,6 +4,7 @@ import "github.com/ilyakaznacheev/cleanenv"
 
 type config struct {
 	LogLevel string `env:"LOG_LEVEL"`
+
 }
 
 func mustNewConfig() *config {
