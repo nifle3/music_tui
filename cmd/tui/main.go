@@ -5,10 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"log/slog"
-	"os"
-	"os/signal"
 	"sync"
-	"syscall"
 
 	"github.com/nifle3/tui_music/internal/ui"
 
@@ -37,12 +34,11 @@ func main() {
 	resultChan := make(chan string)
 	wg := sync.WaitGroup{}
 
-	gracefulCtx, gracefulStop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer gracefulStop()
+	ctx, done := context.WithCancel(context.Background())
 
 	ipcServer := ipc.MustServer(resultChan)
 	wg.Add(1)
-	go ipc.StartServer(ipcServer, &wg, gracefulCtx)
+	go ipc.StartServer(ipcServer, &wg, ctx)
 	slog.Info("IPC server started")
 
 	wg.Add(1)
@@ -52,7 +48,7 @@ func main() {
 			select {
 			case result := <-resultChan:
 				slog.Info("Received IPC result", slog.String("result", result))
-			case <-gracefulCtx.Done():
+			case <-ctx.Done():
 				slog.Debug("IPC result handler stopped")
 				return
 			}
@@ -66,7 +62,8 @@ func main() {
 		slog.Error("There here is an error", slog.String("Error", err.Error()))
 	}
 
-	slog.Debug("Waiting for graceful")
+	slog.Debug("Start graceful")
+	done()
 	wg.Wait()
 
 	slog.Debug("Closing application")
