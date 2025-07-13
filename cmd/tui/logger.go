@@ -2,6 +2,7 @@ package main
 
 import (
 	"log/slog"
+	"strings"
 	"fmt"
 	"os"
 )
@@ -13,10 +14,11 @@ func setupLogger(levelFromConfig string) {
 }
 
 func getLevel(levelFromConfig string) slog.Level {
+	levelFromConfig = strings.ToLower(levelFromConfig)
 	var level slog.Level
 	if err := level.UnmarshalText([]byte(levelFromConfig)); err != nil {
-		level = slog.LevelDebug
-		slog.Warn(fmt.Sprintf("Invalid value (%s) of LOG_LEVEL in config. setup level to debug", levelFromConfig))
+		level = slog.LevelInfo
+		slog.Warn(fmt.Sprintf("Invalid value (%s) of LOG_LEVEL in config. setup level to info", levelFromConfig))
 	}
 
 	return level

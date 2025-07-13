@@ -1,7 +1,6 @@
 package ui
 
 import (
-	"log/slog"
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -89,10 +88,6 @@ func (t Tabs) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return t, nil
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "ctrl+c", "ctrl+с", "esc":
-			slog.Debug("Closing application")
-			return t, tea.Quit
-
 		case "tab":
 			if t.cursor+1 > len(t.tabs)-1 {
 				t.cursor = 0

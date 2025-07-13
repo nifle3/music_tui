@@ -11,13 +11,9 @@ tasks:
       GOTRACEBACK: "crash"
     cmds:
       - echo "Version ${VERSION}"
-      - echo "YANDEX CLIENT ${YANDEX_CLIENT_ID}"
-      - echo "YANDEX SECRET ${YANDEX_CLIENT_SECRET}"
       - |
         go build -o ./bin/yandex_tui \
-          -ldflags "-X github.com/nifle3/tui_music/internal/yandex.сlientId=${YANDEX_CLIENT_ID} \
-                    -X github.com/nifle3/tui_music/internal/yandex.clientSecret=${YANDEX_CLIENT_SECRET} \
-                    -X main.Version=${VERSION}" \
+          -ldflags "-X main.Version=${VERSION}" \
           ./cmd/tui
     silent: true
 
@@ -26,4 +22,9 @@ tasks:
       - "./bin/yandex_tui --yandex_oauth={{.YANDEX_OAUTH}}"
     vars:
       YANDEX_OAUTH: ""
+    silent: true
+
+  test:
+    cmds:
+      - "go test ./..."
     silent: true
